@@ -1,0 +1,265 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #292e2c;
+  background: #f4f4f2;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: 3px solid #89958d;
+  outline-offset: 2px;
+}
+
+.topbar {
+  display: flex;
+  height: 72px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(22px, 6vw, 88px);
+  border-bottom: 1px solid #e2e3df;
+  background: #fff;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #303936;
+  font-size: 17px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.brand-mark {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 10px;
+  background: #e4e6e1;
+  color: #39433e;
+  font-weight: 800;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.user-email {
+  color: #5e6661;
+  font-size: 13px;
+}
+
+.text-button {
+  border: 0;
+  background: transparent;
+  color: #46534c;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: #747b76;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.notice {
+  margin: 20px 0 0;
+  padding: 13px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.notice.success {
+  border: 1px solid #d6e3d8;
+  background: #f1f5f0;
+  color: #45634b;
+}
+
+.notice.error {
+  border: 1px solid #ead8d5;
+  background: #faf2f0;
+  color: #9b4b43;
+}
+
+.notice.rejected {
+  border: 1px solid #ead8d5;
+  background: #faf2f0;
+  color: #9b4b43;
+}
+
+.notice.approved {
+  border: 1px solid #d6e3d8;
+  background: #f1f5f0;
+  color: #45634b;
+}
+
+.status {
+  display: inline-block;
+  padding: 5px 9px;
+  border-radius: 18px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.status.pending {
+  background: #f3efe3;
+  color: #75633b;
+}
+
+.status.approved {
+  background: #eaf0e9;
+  color: #49664c;
+}
+
+.status.rejected {
+  background: #f7ecea;
+  color: #9b4b43;
+}
+
+.loader {
+  width: 23px;
+  height: 23px;
+  border: 2px solid #e0e2de;
+  border-top-color: #65736b;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 760px) {
+  .user-email { display: none; }
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.table-scroll table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.table-scroll th {
+  padding: 11px 13px;
+  border-bottom: 1px solid #e4e5e1;
+  background: #f8f8f6;
+  color: #727975;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: .35px;
+  text-transform: uppercase;
+}
+
+.table-scroll td {
+  padding: 13px;
+  border-bottom: 1px solid #ecece8;
+  color: #5d645f;
+  font-size: 12px;
+}
+
+.table-scroll tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.table-scroll tbody tr:hover {
+  background: #f9f9f7;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  padding-top: 14px;
+  border-top: 1px solid #ecece8;
+}
+
+.pagination .range {
+  color: #7b857f;
+  font-size: 11px;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.pagination-controls label {
+  color: #7b857f;
+  font-size: 11px;
+}
+
+.pagination-controls select {
+  height: 29px;
+  padding: 0 22px 0 7px;
+  border: 1px solid #dedfdb;
+  border-radius: 5px;
+  background: #fff;
+  color: #4b534e;
+  font: inherit;
+  font-size: 11px;
+}
+
+.pagination-controls button {
+  width: 29px;
+  height: 29px;
+  border: 1px solid #dedfdb;
+  border-radius: 5px;
+  background: #fff;
+  color: #46534c;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.pagination-controls button:disabled {
+  background: #f7f8f6;
+  color: #b6beb8;
+  cursor: not-allowed;
+}
+
+.pagination-controls .page-number {
+  min-width: 42px;
+  color: #526058;
+  text-align: center;
+  font-size: 11px;
+}
+
+@media (max-width: 520px) {
+  .pagination {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .pagination-controls {
+    align-self: flex-end;
+  }
+}

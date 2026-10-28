@@ -1,0 +1,133 @@
+<div class="dashboard">
+  <header class="topbar">
+    <a class="brand" routerLink="/user"><span class="brand-mark">P</span> Préstamos</a>
+    <div class="topbar-actions">
+      <span class="user-email">{{ auth.email() }}</span>
+      <button class="text-button" type="button" (click)="logout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="content">
+    <section class="welcome">
+      <div>
+        <p class="eyebrow">RESUMEN DE CUENTA</p>
+        <h1>Bienvenido</h1>
+        <p>Solicita financiación y consulta el progreso de tus solicitudes.</p>
+      </div>
+      <div class="account-count">
+        <span>Solicitudes</span>
+        <strong>{{ totalElements() }}</strong>
+      </div>
+    </section>
+
+    @if (message()) {
+      <div class="notice success" role="status">{{ message() }}</div>
+    }
+    @if (errorMessage()) {
+      <div class="notice error" role="alert">{{ errorMessage() }}</div>
+    }
+
+    <div class="dashboard-grid">
+      <section class="panel request-panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">NUEVA SOLICITUD</p>
+            <h2>Solicitar préstamo</h2>
+          </div>
+        </div>
+        <p class="panel-description">Indica el monto y el plazo que necesitas. Podrás revisar el estado desde esta página.</p>
+
+        <form [formGroup]="form" (ngSubmit)="submitLoan()" novalidate>
+          <label for="amount">Monto</label>
+          <div class="field-help">Mínimo $100</div>
+          <div class="input-with-prefix">
+            <span aria-hidden="true">$</span>
+            <input id="amount" type="number" min="100" step="50" placeholder="0.00" formControlName="amount" />
+          </div>
+          @if (form.controls.amount.touched && form.controls.amount.invalid) {
+            <span class="field-error">
+              {{ form.controls.amount.hasError('required') ? 'Ingresa un monto.' : 'El monto mínimo es $100.' }}
+            </span>
+          }
+
+          <label for="term">Plazo de pago</label>
+          <div class="field-help">De 1 a 360 meses</div>
+          <div class="input-with-suffix">
+            <input id="term" type="number" min="1" max="360" placeholder="12" formControlName="term" />
+            <span>meses</span>
+          </div>
+          @if (form.controls.term.touched && form.controls.term.invalid) {
+            <span class="field-error">
+              {{ form.controls.term.hasError('required') ? 'Ingresa el plazo.' : 'Usa un plazo entre 1 y 360 meses.' }}
+            </span>
+          }
+
+          <button class="primary-button" type="submit" [disabled]="submitting()">
+            {{ submitting() ? 'Enviando…' : 'Enviar solicitud' }}
+          </button>
+        </form>
+        <p class="secure-note">La solicitud quedará pendiente mientras se revisa.</p>
+      </section>
+
+      <section class="panel loans-panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">ACTIVIDAD</p>
+            <h2>Tus solicitudes</h2>
+          </div>
+          <button class="refresh-button" type="button" (click)="loadLoans()" aria-label="Actualizar solicitudes">↻</button>
+        </div>
+
+        @if (loadingLoans()) {
+          <div class="empty-state"><span class="loader"></span><p>Cargando tus solicitudes…</p></div>
+        } @else if (loans().length === 0) {
+          <div class="empty-state">
+            <h3>Aún no hay solicitudes</h3>
+            <p>Cuando envíes una solicitud aparecerá aquí.</p>
+          </div>
+        } @else {
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Solicitud</th>
+                  <th>Monto</th>
+                  <th>Plazo</th>
+                  <th>Fecha</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (loan of loans(); track loan.id) {
+                  <tr>
+                    <td class="loan-number">#{{ loan.id }}</td>
+                    <td class="amount">{{ loan.amount | currency:'USD':'symbol':'1.0-0' }}</td>
+                    <td>{{ loan.term }} meses</td>
+                    <td>{{ loan.startDate | date:'mediumDate' }}</td>
+                    <td><span class="status" [class]="loan.status.toLowerCase()">{{ statusLabel(loan.status) }}</span></td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+        @if (!loadingLoans() && totalElements() > 0) {
+          <div class="pagination">
+            <span class="range">Mostrando {{ firstItem() }}–{{ lastItem() }} de {{ totalElements() }}</span>
+            <div class="pagination-controls">
+              <label for="user-page-size">Filas</label>
+              <select id="user-page-size" [value]="pageSize()" (change)="changePageSize($event)">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+              </select>
+              <button type="button" aria-label="Página anterior" [disabled]="page() === 0" (click)="changePage(page() - 1)">‹</button>
+              <span class="page-number">{{ page() + 1 }} / {{ totalPages() }}</span>
+              <button type="button" aria-label="Página siguiente" [disabled]="page() + 1 >= totalPages()" (click)="changePage(page() + 1)">›</button>
+            </div>
+          </div>
+        }
+      </section>
+    </div>
+  </main>
+</div>

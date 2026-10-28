@@ -1,0 +1,127 @@
+<div class="admin-dashboard">
+  <header class="topbar">
+    <a class="brand" routerLink="/admin"><span class="brand-mark">P</span> Préstamos <span class="admin-tag">ADMIN</span></a>
+    <div class="topbar-actions">
+      <span class="user-email">{{ auth.email() }}</span>
+      <button class="text-button" type="button" (click)="logout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="content">
+    <section class="page-heading">
+      <div>
+        <p class="eyebrow">CENTRO DE OPERACIONES</p>
+        <h1>Panel de administración</h1>
+        <p>Revisa las solicitudes y gestiona su estado.</p>
+      </div>
+      <button class="refresh-button" type="button" (click)="loadLoans()">↻ <span>Actualizar</span></button>
+    </section>
+
+    @if (errorMessage()) {
+      <div class="notice error" role="alert">{{ errorMessage() }}</div>
+    }
+    @if (successMessage()) {
+      <div class="notice" [class]="successStatus() === 'REJECTED' ? 'rejected' : 'approved'" role="status">
+        {{ successMessage() }}
+      </div>
+    }
+
+    <section class="summary-grid" aria-label="Resumen de solicitudes">
+      <article class="summary-card">
+        <span class="summary-icon pending-icon" aria-hidden="true">◷</span>
+        <div><p>Pendientes en esta página</p><strong>{{ pendingCount() }}</strong></div>
+      </article>
+      <article class="summary-card">
+        <span class="summary-icon approved-icon" aria-hidden="true">✓</span>
+        <div><p>Aprobadas en esta página</p><strong>{{ approvedCount() }}</strong></div>
+      </article>
+      <article class="summary-card">
+        <span class="summary-icon all-icon" aria-hidden="true">▤</span>
+        <div><p>Total de solicitudes</p><strong>{{ totalElements() }}</strong></div>
+      </article>
+    </section>
+
+    <section class="table-panel">
+      <div class="table-heading">
+        <div>
+          <h2>Solicitudes recibidas</h2>
+          <p>Las solicitudes pendientes pueden aprobarse o rechazarse.</p>
+        </div>
+      </div>
+
+      @if (loading()) {
+        <div class="table-state"><span class="loader"></span><p>Cargando solicitudes…</p></div>
+      } @else if (loans().length === 0) {
+        <div class="table-state"><span class="empty-icon">▤</span><h3>No hay solicitudes todavía</h3></div>
+      } @else {
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Solicitud</th>
+                <th>Usuario</th>
+                <th>Monto</th>
+                <th>Plazo</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th class="actions-heading">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (loan of loans(); track loan.id) {
+                <tr>
+                  <td class="loan-number">#{{ loan.id }}</td>
+                  <td>{{ loan.user?.email ?? '—' }}</td>
+                  <td class="amount">{{ loan.amount | currency:'USD':'symbol':'1.0-0' }}</td>
+                  <td>{{ loan.term }} meses</td>
+                  <td>{{ loan.startDate | date:'mediumDate' }}</td>
+                  <td>
+                    <span class="status" [class]="loan.status.toLowerCase()">
+                      {{ loan.status === 'PENDING' ? 'Pendiente' : loan.status === 'APPROVED' ? 'Aprobado' : 'Rechazado' }}
+                    </span>
+                  </td>
+                  <td>
+                    @if (loan.status === 'PENDING') {
+                      <div class="row-actions">
+                        <button
+                          class="approve-button"
+                          type="button"
+                          [disabled]="updatingIds().has(loan.id)"
+                          (click)="updateStatus(loan, 'APPROVED')"
+                        >Aprobar</button>
+                        <button
+                          class="reject-button"
+                          type="button"
+                          [disabled]="updatingIds().has(loan.id)"
+                          (click)="updateStatus(loan, 'REJECTED')"
+                        >Rechazar</button>
+                      </div>
+                    } @else {
+                      <span class="completed">Procesada</span>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+      @if (!loading() && totalElements() > 0) {
+        <div class="pagination">
+          <span class="range">Mostrando {{ firstItem() }}–{{ lastItem() }} de {{ totalElements() }}</span>
+          <div class="pagination-controls">
+            <label for="admin-page-size">Filas</label>
+            <select id="admin-page-size" [value]="pageSize()" (change)="changePageSize($event)">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+            </select>
+            <button type="button" aria-label="Página anterior" [disabled]="page() === 0" (click)="changePage(page() - 1)">‹</button>
+            <span class="page-number">{{ page() + 1 }} / {{ totalPages() }}</span>
+            <button type="button" aria-label="Página siguiente" [disabled]="page() + 1 >= totalPages()" (click)="changePage(page() + 1)">›</button>
+          </div>
+        </div>
+      }
+    </section>
+  </main>
+</div>
